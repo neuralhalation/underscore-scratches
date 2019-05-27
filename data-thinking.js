@@ -14,6 +14,10 @@ let books = [
     {title: 'After Dark'}
 ]
 
-function pluck_w_default(books, key) {
-    return _.pluck(_.map(books, (obj) => { return _.defaults(obj, {author: 'unknown'})}), key);
+function pluck_w_default(books, defaults, key) {
+    return _.pluck(_.map(books, (obj) => { return _.defaults(obj, defaults)}), key);
 }
+
+console.log(`The _.pluck function: ${_.pluck(books, 'author')}`);
+
+console.log(`The pluck_w_default function: ${pluck_w_default(books, {author: 'unknown'}, 'author')}`);
