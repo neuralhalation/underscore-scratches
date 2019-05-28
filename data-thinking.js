@@ -1,3 +1,5 @@
+const _ = require('underscore');
+
 // _.keys and _.values
 
 let zombie = {name: 'Bub', film: 'Day of The Dead'}
