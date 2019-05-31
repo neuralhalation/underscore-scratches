@@ -6,36 +6,38 @@ high-order function:
 
 // note: the capitalization of captured variables is not recommended
 // when writing closures
-
 // starting simple with _.max
+const _ = require('underscore');
+const c = require('./closures');
 
-const _ = require('underscore')
-const c = require('./closures')
-
-const nums = [1,2,3,4,5]
+const nums = [1, 2, 3, 4, 5];
 
 console.log(_.max(nums));
 
-const people = [{name: "Fred", age: 65}, {name: "Lucy", age: 36}]
+const people = [{name: 'Fred', age: 65}, {name: 'Lucy', age: 36}];
 
-console.log(_.max(people, (p) => { return p.age }));
+console.log(_.max(people, (p) => {
+  return p.age;
+}));
 
 // improving _.max w/ finder
 
-const finder = (valueFun, bestFun, coll) {
-    return _.reduce(coll, (best, current) => {
-        let bestValue = valueFun(best);
-        let currentValue = valueFun(current);
-        return (bestValue === bestFun(bestValue, currentValue)) ? best : current;
-    });
-}
+const finder = (valueFun, bestFun, coll) => {
+  return _.reduce(coll, (best, current) => {
+    const bestValue = valueFun(best);
+    const currentValue = valueFun(current);
+    return (bestValue === bestFun(bestValue, currentValue)) ? best : current;
+  });
+};
 
 console.log(finder(_.identity, Math.max, nums));
 
-console.log(finder(plucker('age'), Math.max, people));
+console.log(finder(c.plucker('age'), Math.max, people));
 
-const peopleWithLNames = finder(plucker('name'),
-    (x, y) => { return (x.charAt(0) === "L") ? x : y },
+const peopleWithLNames = finder(c.plucker('name'),
+    (x, y) => {
+      return (x.charAt(0) === 'L') ? x : y;
+    },
     people
 );
 
@@ -49,12 +51,14 @@ Finder can be improved by making two assumptions:
 */
 
 const best = (fun, coll) => {
-    return _.reduce(coll, (x, y) => {
-        return fun(x, y) ? x : y
-    });
-}
+  return _.reduce(coll, (x, y) => {
+    return fun(x, y) ? x : y;
+  });
+};
 
-const maxNum = best((x, y) => { return x > y }, nums);
+const maxNum = best((x, y) => {
+  return x > y;
+}, nums);
 
 console.log(`maxNum: ${maxNum}`);
 
@@ -63,34 +67,39 @@ console.log(`maxNum: ${maxNum}`);
 // 3 related functions & how to make them more generic
 
 const repeat = (times, VALUE) => {
-    return _.map(_.range(times), () => { return VALUE; });
-}
+  return _.map(_.range(times), () => {
+    return VALUE;
+  });
+};
 
-console.log(repeat(4, "Major"));
+console.log(repeat(4, 'Major'));
 
 // what if we need to repeatedly run an opperation?
 
 const repeatedly = (times, fun) => {
-    return _.map(_.range(times), fun);
-}
+  return _.map(_.range(times), fun);
+};
 
-const randomFloors = repeatedly(3, 
-    () => { return Math.floor((Math.random()*10)+1);
-});
+const randomFloors = repeatedly(3,
+    () => {
+      return Math.floor((Math.random()*10)+1);
+    });
 
 console.log(`randomFloors: ${randomFloors}`);
 
 // now with constant values
 
-console.log(repeatedly(3, () => { return "Odelay!" }));
+console.log(repeatedly(3, () => {
+  return 'Odelay!';
+}));
 
 // now to make some DOM nodes
 
 repeatedly(3, (n) => {
-    let id = 'id' + n;
-    $('body').append($("<p>Odelay!</p>").attr('id', id));
-    return id;
-})
+  const id = 'id' + n;
+  // $('body').append($('<p>Odelay!</p>').attr('id', id));
+  return id;
+});
 
 /*
 'repeatedly' is ok, but could be better. its first argument still relies on
@@ -101,16 +110,16 @@ instead of a value, what about a condition?
 */
 
 const iterateUntil = (fun, check, init) => {
-    let ret = []
-    let result = fun(init);
+  const ret = [];
+  let result = fun(init);
 
-    while (check(result)) {
-        ret.push(result)
-        result = fun(result);
-    }
+  while (check(result)) {
+    ret.push(result);
+    result = fun(result);
+  }
 
-    return ret;
-}
+  return ret;
+};
 
 /*
 'iterateUntil' takes two functions:
@@ -119,15 +128,19 @@ const iterateUntil = (fun, check, init) => {
   value
 */
 
-const goTo1024 = iterateUntil((n) => { return n + n},
-    (n) => { return n <= 1024 },
-    1
+const goTo1024 = iterateUntil((n) => {
+  return n + n;
+},
+(n) => {
+  return n <= 1024;
+},
+1
 );
 
 console.log(`goTo1024: ${goTo1024}`);
 
 /*
-'repeatedly' is nice when you know exactly how many times you need to do something.
+'repeatedly' is nice when you know exactly how many times you need to
+ do omething.
 'iterateUntil' is nice because you know at least when to stop.
 */
-
