@@ -6,3 +6,5 @@ function strangeIdentity(n) {
 
 console.log(strangeIdentity(138));
 
+// scoping has changed a lot in ES6 with the introduction of const, let, 
+// and block scope
