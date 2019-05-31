@@ -89,3 +89,25 @@ let isOdd = complement(isEven);
 console.log(`Using isEven(2): ${isEven(2)}`);
 console.log(`Using isOdd(2): ${isOdd(2)}`);
 console.log(`Using isOdd(3): ${isOdd(3)}`);
+
+// closures as abstraction
+
+const plucker = (FIELD) => {
+    return (obj) => {
+        return (obj && obj[FIELD])
+    };
+}
+
+const best = {title: 'Infinite Jest', author: 'DFW'};
+
+const getTitle = plucker('title');
+
+console.log(getTitle(best));
+
+const books = [{title: 'Chthon'}, {stars: 5}, {titles: 'Botchan'}]
+
+const third = plucker(2)
+
+console.log(third(books));
+
+console.log(_.filter(books, getTitle));
