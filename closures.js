@@ -80,11 +80,11 @@ const complement = (PRED) => {
     };
 }
 
-let isEven = (n) => {
+const isEven = (n) => {
     return (n%2) === 0
 }
 
-let isOdd = complement(isEven);
+const isOdd = complement(isEven);
 
 console.log(`Using isEven(2): ${isEven(2)}`);
 console.log(`Using isOdd(2): ${isOdd(2)}`);
