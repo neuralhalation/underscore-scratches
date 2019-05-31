@@ -111,3 +111,8 @@ const third = plucker(2)
 console.log(third(books));
 
 console.log(_.filter(books, getTitle));
+
+exports.complement
+exports.isOdd
+exports.isEven
+exports.plucker
