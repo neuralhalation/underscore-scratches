@@ -9,6 +9,7 @@ high-order function:
 // starting simple with _.max
 const _ = require('underscore');
 const c = require('./closures');
+const et = require('./existy-and-truthy');
 
 const nums = [1, 2, 3, 4, 5];
 
@@ -144,3 +145,69 @@ console.log(`goTo1024: ${goTo1024}`);
  do omething.
 'iterateUntil' is nice because you know at least when to stop.
 */
+
+/*
+ -- Functions returning functions --
+*/
+
+/*
+ a function returning a constant that it's almost a design pattern, usually called 'k'
+ here, it's called 'always'. note that this function captures a value, is a closure.
+*/
+
+const always = (VALUE) => {
+  return () => {
+    return VALUE;
+  }
+}
+
+const f = always(() => {});
+console.log(`f() === f(): ${f() === f()}`);
+
+const g = always(() => {});
+console.log(`f() === g(): ${f() === g()}`);
+
+// 'always' is what is known as a *combinator*
+
+/*
+ a function to guard against nonexistence: fnull
+ - takes a function as an argument, and a number of additional arguments
+ - returns a function that calls the original function given
+ - if any of the arguments to the function that it returns are null or undefined,
+   then the original 'default' argument is used instead
+*/
+
+const fnull = (func /*, defaults */) => {
+  let defaults = _.rest(arguments);
+
+  return (/* args */) => {
+    const args = _.map(arguments, (e, i) => {
+      return et.existy(e) ? e: defaults[i];
+    });
+
+    return func.apply(null, args);
+  };
+};
+
+const nullNums = [1, 2, 3, null, 5]
+
+const safeMult = fnull((total, n) => { return total * n}, 1, 1);
+
+console.log(`_.reduce(nullNums, safeMult); : ${_.reduce(nullNums, safeMult)}`);
+
+// to fix the configuration object problem
+
+const defaults = (d) => {
+  return (o, k) => {
+    const val = fnull(_.identity, d[k]);
+    return o && val(o[k]);
+  };
+}
+
+const doSomething = (config) => {
+  const lookup = defaults({critical: 108});
+  return lookup(config, 'critical');
+}
+
+console.log(`doSomething({critical: 9}); : ${doSomething({critical: 9})}`);
+console.log(`doSomething({}); : ${doSomething({})} `);
