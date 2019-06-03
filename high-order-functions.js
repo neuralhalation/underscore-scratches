@@ -242,11 +242,11 @@ const checker = (/* validators */) => {
   const validators = _.toArray(arguments);
 
   return (obj) => {
-    return _.reduce(validators, (errs, arguments) => {
-      if (arguments(obj)) {
+    return _.reduce(validators, (errs, check) => {
+      if (check(obj)) {
         return errs;
       } else {
-        return _.chain(errs).push(arguments.message).value();
+        return _.chain(errs).push(check.message).value();
       }
     }, []);
   };
