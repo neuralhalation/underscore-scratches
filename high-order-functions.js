@@ -12,10 +12,10 @@ const _ = require('underscore');
 const c = require('./closures');
 const et = require('./existy-and-truthy');
 
-const cat = () => {
-  const head = _.first(arguments);
+const cat = (...args) => {
+  const head = _.first(...args);
   if (et.existy(head)) {
-    return head.concat.apply(head, _.rest(arguments));
+    return head.concat.apply(head, _.rest(...args));
   } else {
     return [];
   };
@@ -188,11 +188,11 @@ console.log(`f() === g(): ${f() === g()}`);
    undefined, then the original 'default' argument is used instead
 */
 
-const fnull = (func /* , defaults */) => {
-  const defaults = _.rest(arguments);
+const fnull = (func, defs) => {
+  const defaults = _.rest(defs);
 
-  return (/* args */) => {
-    const args = _.map(arguments, (e, i) => {
+  return (arg) => {
+    const args = _.map(arg, (e, i) => {
       return et.existy(e) ? e: defaults[i];
     });
 
@@ -238,8 +238,8 @@ const jsonResponse = {
   from: 'http://localhost:8080/node/frob',
 };
 
-const checker = (/* validators */) => {
-  const validators = _.toArray(arguments);
+const checker = (...args) => {
+  const validators = _.toArray(...args);
 
   return (obj) => {
     return _.reduce(validators, (errs, check) => {
@@ -261,8 +261,8 @@ const alwaysFails = checker(fails);
 console.log(`alwaysFails({}); : ${alwaysFails({})}`);
 
 const validator = (message, fun) => {
-  const f = (/* args */) => {
-    return fun.apply(fun, arguments);
+  const f = (...args) => {
+    return fun.apply(fun, ...args);
   };
   f['message'] = message;
   return f;
@@ -279,8 +279,8 @@ const checkCommand = checker(validator('must be a map', aMap));
 console.log(`checkCommand({}); : ${checkCommand({})}`);
 console.log(`checkCommand(42); : ${checkCommand(42)}`);
 
-const hasKeys = () => {
-  const KEYS = _.toArray(arguments);
+const hasKeys = (...args) => {
+  const KEYS = _.toArray(...args);
 
   const fun = (obj) => {
     return _.every(KEYS, (k) => {
@@ -301,7 +301,6 @@ console.log(`checkResponse(32); : ${checkResponse(32)}`);
 console.log(`checkResponse({}); : ${checkResponse({})}`);
 
 exports.cat = cat;
-exports.max = max;
 exports.finder = finder;
 exports.best = best;
 exports.repeatedly = repeatedly;
