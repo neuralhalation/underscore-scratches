@@ -1,3 +1,4 @@
+/* eslint-disable prefer-spread */
 /*
 high-order function:
   - a function that takes a function as an argument
@@ -10,6 +11,15 @@ high-order function:
 const _ = require('underscore');
 const c = require('./closures');
 const et = require('./existy-and-truthy');
+
+const cat = () => {
+  const head = _.first(arguments);
+  if (et.existy(head)) {
+    return head.concat.apply(head, _.rest(arguments));
+  } else {
+    return [];
+  };
+};
 
 const nums = [1, 2, 3, 4, 5];
 
@@ -151,15 +161,16 @@ console.log(`goTo1024: ${goTo1024}`);
 */
 
 /*
- a function returning a constant that it's almost a design pattern, usually called 'k'
- here, it's called 'always'. note that this function captures a value, is a closure.
+ a function returning a constant that it's almost a design pattern,
+ usually called 'k' here, it's called 'always'. note that this function
+ captures a value, is a closure.
 */
 
 const always = (VALUE) => {
   return () => {
     return VALUE;
-  }
-}
+  };
+};
 
 const f = always(() => {});
 console.log(`f() === f(): ${f() === f()}`);
@@ -173,12 +184,12 @@ console.log(`f() === g(): ${f() === g()}`);
  a function to guard against nonexistence: fnull
  - takes a function as an argument, and a number of additional arguments
  - returns a function that calls the original function given
- - if any of the arguments to the function that it returns are null or undefined,
-   then the original 'default' argument is used instead
+ - if any of the arguments to the function that it returns are null or
+   undefined, then the original 'default' argument is used instead
 */
 
-const fnull = (func /*, defaults */) => {
-  let defaults = _.rest(arguments);
+const fnull = (func /* , defaults */) => {
+  const defaults = _.rest(arguments);
 
   return (/* args */) => {
     const args = _.map(arguments, (e, i) => {
@@ -189,9 +200,11 @@ const fnull = (func /*, defaults */) => {
   };
 };
 
-const nullNums = [1, 2, 3, null, 5]
+const nullNums = [1, 2, 3, null, 5];
 
-const safeMult = fnull((total, n) => { return total * n}, 1, 1);
+const safeMult = fnull((total, n) => {
+  return total * n;
+}, 1, 1);
 
 console.log(`_.reduce(nullNums, safeMult); : ${_.reduce(nullNums, safeMult)}`);
 
@@ -202,12 +215,98 @@ const defaults = (d) => {
     const val = fnull(_.identity, d[k]);
     return o && val(o[k]);
   };
-}
+};
 
 const doSomething = (config) => {
   const lookup = defaults({critical: 108});
   return lookup(config, 'critical');
-}
+};
 
 console.log(`doSomething({critical: 9}); : ${doSomething({critical: 9})}`);
 console.log(`doSomething({}); : ${doSomething({})} `);
+
+/*
+ -- Object Validators --
+ - validating the veracity of an object based on arbitrary criteria
+
+ - e.g., recieve external commands via JSON objects
+*/
+
+const jsonResponse = {
+  message: 'Hi!',
+  type: 'display',
+  from: 'http://localhost:8080/node/frob',
+};
+
+const checker = (/* validators */) => {
+  const validators = _.toArray(arguments);
+
+  return (obj) => {
+    return _.reduce(validators, (errs, arguments) => {
+      if (arguments(obj)) {
+        return errs;
+      } else {
+        return _.chain(errs).push(arguments.message).value();
+      }
+    }, []);
+  };
+};
+
+const alwaysPasses = checker(always(true), always(true));
+console.log(`alwaysPasses({}); : ${alwaysPasses({})}`);
+
+const fails = always(false);
+fails.message = 'a failure in life';
+const alwaysFails = checker(fails);
+console.log(`alwaysFails({}); : ${alwaysFails({})}`);
+
+const validator = (message, fun) => {
+  const f = (/* args */) => {
+    return fun.apply(fun, arguments);
+  };
+  f['message'] = message;
+  return f;
+};
+
+const gonnaFail = checker(validator('ZOMG!', always(false)));
+console.log(`gonnaFail(100); : ${gonnaFail(100)}`);
+
+const aMap = (obj) => {
+  return _.isObject(obj);
+};
+
+const checkCommand = checker(validator('must be a map', aMap));
+console.log(`checkCommand({}); : ${checkCommand({})}`);
+console.log(`checkCommand(42); : ${checkCommand(42)}`);
+
+const hasKeys = () => {
+  const KEYS = _.toArray(arguments);
+
+  const fun = (obj) => {
+    return _.every(KEYS, (k) => {
+      return _.has(obj, k);
+    });
+  };
+
+  fun.message = cat(['Must have values for keys:'], KEYS).join(' ');
+  return fun;
+};
+
+const checkResponse = checker(validator('must be a map', aMap),
+    hasKeys('msg', 'type'));
+
+console.log(`checkResponse(jsonResponse); : ${checkResponse(jsonResponse)}`);
+console.log(`checkResponse({msg: "blah", type: "display"}); : ${checkResponse({msg: 'blah', type: 'display'})}`);
+console.log(`checkResponse(32); : ${checkResponse(32)}`);
+console.log(`checkResponse({}); : ${checkResponse({})}`);
+
+exports.cat = cat;
+exports.max = max;
+exports.finder = finder;
+exports.best = best;
+exports.repeatedly = repeatedly;
+exports.iterateUntil = iterateUntil;
+exports.checker = checker;
+exports.validator = validator;
+exports.aMap = aMap;
+exports.hasKeys = hasKeys;
