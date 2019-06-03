@@ -279,8 +279,8 @@ const checkCommand = checker(validator('must be a map', aMap));
 console.log(`checkCommand({}); : ${checkCommand({})}`);
 console.log(`checkCommand(42); : ${checkCommand(42)}`);
 
-const hasKeys = (...args) => {
-  const KEYS = _.toArray(...args);
+const hasKeys = (...params) => {
+  const KEYS = _.toArray(...params);
 
   const fun = (obj) => {
     return _.every(KEYS, (k) => {
@@ -293,7 +293,9 @@ const hasKeys = (...args) => {
 };
 
 const checkResponse = checker(validator('must be a map', aMap),
-    hasKeys('msg', 'type'));
+    hasKeys('msg', 'type')
+);
+
 
 console.log(`checkResponse(jsonResponse); : ${checkResponse(jsonResponse)}`);
 console.log(`checkResponse({msg: "blah", type: "display"}); : ${checkResponse({msg: 'blah', type: 'display'})}`);
