@@ -3,8 +3,10 @@ module.exports = {
     'browser': true,
     'commonjs': true,
     'es6': true,
+    'node': true,
   },
-  'extends': 'google',
+  'extends': ['eslint:recommended', 'prettier'],
+  'plugins': ['prettier', 'node', 'promise', 'standard'],
   'globals': {
     'Atomics': 'readonly',
     'SharedArrayBuffer': 'readonly',
@@ -12,6 +14,15 @@ module.exports = {
   'parserOptions': {
     'ecmaVersion': 2018,
   },
-  'rules': {
-  },
+  "rules": {
+    'prettier/prettier': [
+      'error',
+      {
+        singleQuote: true,
+        trailingComma: 'all',
+      },
+    ],
+    'eqeqeq': ['error', 'always'],
+    'linebreak-style': ['error', 'windows']
+  }
 };
