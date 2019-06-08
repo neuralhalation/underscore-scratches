@@ -39,6 +39,13 @@ assertEqual(-1, max([-12, -3483, -2, -1]));
 
 console.log('All tests pass');
 
+/**
+ * Think about it this way: You often don't know what your data
+ * will be, but you do know what operations you'll be using on them.
+ * Currying allows you to build up your operations, or things you
+ * know, and supply the stuff you don't know, last. 
+ */
+
  /**
   * assertions
   */
