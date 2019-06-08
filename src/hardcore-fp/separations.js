@@ -1,10 +1,10 @@
-const r = require('ramda')
+const r = require("ramda");
 
 /** function separated from relying on the computer's clock */
 function daysInMonth(year, month) {
   const start = new Date(year, month - 1, 1),
-    end = new Date(year, month, 1)
-  return (end - start) / (1000 * 60 * 60 * 24)
+    end = new Date(year, month, 1);
+  return (end - start) / (1000 * 60 * 60 * 24);
 }
 
 /** theoretically, every function is a *single-valued* collection of pairs */
@@ -21,7 +21,7 @@ function daysInMonth(year, month) {
  */
 
 function get(prop, obj) {
-  return obj[prop]
+  return obj[prop];
 }
 
 /** introduction to currying */
@@ -29,22 +29,22 @@ function get(prop, obj) {
 function curry(func, ...arg) {
   return () => {
     if (func.length > arg.length) {
-      const slice = Array.prototype.slice
-      const args = slice.apply(arg)
+      const slice = Array.prototype.slice;
+      const args = slice.apply(arg);
       return () => {
-        return func.apply(null, args.concat(slice.apply(arg)))
-      }
+        return func.apply(null, args.concat(slice.apply(arg)));
+      };
     }
-    return func.apply(null, arg)
-  }
+    return func.apply(null, arg);
+  };
 }
 
 /** rewriting get() now that we can curry */
 
 const getWCurry = curry((property, object) => {
-  return object[property]
-})
+  return object[property];
+});
 
-people = [{ name: 'Peter', age: 19 }, { name: 'Alexi', age: 43 }]
+people = [{ name: "Peter", age: 19 }, { name: "Alexi", age: 43 }];
 
-const names = people.map(get('name'))
+const names = people.map(get("name"));
