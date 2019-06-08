@@ -1,10 +1,10 @@
-const r = require('ramda');
+const r = require('ramda')
 
 /** function separated from relying on the computer's clock */
 function daysInMonth(year, month) {
   const start = new Date(year, month - 1, 1),
-    end = new Date(year, month, 1);
-  return (end - start) / (1000 * 60 * 60 * 24);
+    end = new Date(year, month, 1)
+  return (end - start) / (1000 * 60 * 60 * 24)
 }
 
 /** theoretically, every function is a *single-valued* collection of pairs */
@@ -20,38 +20,31 @@ function daysInMonth(year, month) {
  *  hence it might be good to write our own get()
  */
 
- function get(prop, obj) {
-   return obj[prop];
- }
+function get(prop, obj) {
+  return obj[prop]
+}
 
- /** introduction to currying */
- 
- function curry(func, ...arg) {
-   return () => {
-     if (func.length > arg.length) {
-       const slice = Array.prototype.slice;
-       const args = slice.apply(arg);
-       return () => {
-         return func.apply(
-           null, args.concat(slice.apply(arg)));
-       }
-     }
-     return func.apply(null, arg);
-   }
- }
+/** introduction to currying */
 
- /** rewriting get() now that we can curry */
+function curry(func, ...arg) {
+  return () => {
+    if (func.length > arg.length) {
+      const slice = Array.prototype.slice
+      const args = slice.apply(arg)
+      return () => {
+        return func.apply(null, args.concat(slice.apply(arg)))
+      }
+    }
+    return func.apply(null, arg)
+  }
+}
 
- const getWCurry = curry((property, object) => {
-   return object[property];
- });
+/** rewriting get() now that we can curry */
 
- people = [
-   {name: 'Peter', age: 19},
-   {name: 'Alexi', age: 43}
- ]
+const getWCurry = curry((property, object) => {
+  return object[property]
+})
 
- const names = people.map(get('name'));
+people = [{ name: 'Peter', age: 19 }, { name: 'Alexi', age: 43 }]
 
- /** example on jsbin.com/romun */
- 
+const names = people.map(get('name'))
