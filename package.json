@@ -24,7 +24,8 @@
   "dependencies": {
     "jquery": "^3.4.1",
     "tslint": "^5.17.0",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
